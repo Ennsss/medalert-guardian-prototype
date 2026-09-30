@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Battery,
   Bell,
@@ -18,33 +19,38 @@ import type { Device } from "@/lib/device";
 export default function Dashboard() {
   const router = useRouter();
   const [device, setDevice] = useState<Device | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const load = useCallback(async () => {
-    setBusy(true);
-    setError("");
-    try {
-      const res = await fetch("/api/device", { cache: "no-store" });
-      if (res.status === 401) {
-        router.replace("/login");
-        return;
-      }
-      if (!res.ok) throw new Error();
-      const data: Device = await res.json();
-      setDevice(data);
-      setNotice(
-        `Demo information refreshed at ${new Date(data.fetchedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`,
-      );
-    } catch {
-      setError("Device information couldn't be loaded. Please try again.");
-    } finally {
-      setBusy(false);
-    }
+  const load = useCallback(() => {
+    return fetch("/api/device", { cache: "no-store" })
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.replace("/login");
+          return;
+        }
+        if (!res.ok) throw new Error();
+        const data: Device = await res.json();
+        setDevice(data);
+        setNotice(
+          `Demo information refreshed at ${new Date(data.fetchedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}.`,
+        );
+      })
+      .catch(() => {
+        setError("Device information couldn't be loaded. Please try again.");
+      })
+      .finally(() => {
+        setBusy(false);
+      });
   }, [router]);
   useEffect(() => {
     void load();
   }, [load]);
+  function refresh() {
+    setBusy(true);
+    setError("");
+    void load();
+  }
   async function logout() {
     try {
       const res = await fetch("/api/login", { method: "DELETE" });
@@ -86,9 +92,13 @@ export default function Dashboard() {
           <div>
             <div className="eyebrow">YOUR FAMILY, CONNECTED</div>
             <h1>{device?.wearer ?? "Margaret Thompson"}</h1>
-            <p className="muted">A clear view of Margaret's watch.</p>
+            <p className="muted">A clear view of Margaret&apos;s watch.</p>
           </div>
-          <button className="button secondary" disabled={busy} onClick={load}>
+          <button
+            className="button secondary"
+            disabled={busy}
+            onClick={refresh}
+          >
             <RefreshCw size={17} className={busy ? "spin" : ""} />
             {busy ? "Refreshing..." : "Refresh status"}
           </button>
@@ -109,14 +119,14 @@ export default function Dashboard() {
           <>
             <section className="device-overview">
               <div className="device-title">
-                <img
+                <Image
                   src="/medalert-plus.jpg"
                   alt="Black MedAlert PLUS watch"
-                  width="100"
-                  height="100"
+                  width={100}
+                  height={100}
                 />
                 <div>
-                  <span className="eyebrow">MARGARET'S WATCH</span>
+                  <span className="eyebrow">MARGARET&apos;S WATCH</span>
                   <h2>{device.model}</h2>
                   <span className="status-pill">
                     <span className="status-dot" />
@@ -225,7 +235,8 @@ export default function Dashboard() {
             </div>
             <p className="dashboard-note">
               <Watch size={16} /> Watch connectivity does not confirm the
-              wearer's wellbeing. This prototype does not monitor a real device.
+              wearer&apos;s wellbeing. This prototype does not monitor a real
+              device.
             </p>
           </>
         )}

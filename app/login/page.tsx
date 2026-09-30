@@ -57,7 +57,7 @@ export default function Login() {
             <br />A lot of reassurance.
           </h1>
           <p>
-            Your family's connection to the people who matter. Welcome to
+            Your family&apos;s connection to the people who matter. Welcome to
             Guardian.
           </p>
           <div
