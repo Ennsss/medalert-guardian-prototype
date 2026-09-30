@@ -1,45 +1,68 @@
-# MedAlert + Guardian prototype
+# MedAlert + Guardian
 
-A hiring-challenge concept for MedAlert: a product-led homepage, demo authentication, and a family dashboard. Submitted by Frederick Ian Aranico; implementation, design iteration, and tests authored with OpenAI Codex. Claude Code and Claude Design were **not** used.
+A product-led homepage and connected-care dashboard, built as a focused MedAlert hiring-challenge prototype.
 
-## Try it
+**[Explore the live demo](https://medalert-guardian-challenge.vercel.app)** | **[Open Guardian](https://medalert-guardian-challenge.vercel.app/login)**
 
-[Live prototype](https://medalert-guardian-challenge.vercel.app) | [Public source](https://github.com/Ennsss/medalert-guardian-prototype)
+`Next.js` / `React` / `TypeScript` / `CSS` / `Lucide` / `Vercel`
 
-Use `demo@medalert.test` / `Guardian72!`, or select **Use demo credentials** on the login page. Any other credentials produce an error. Please do not enter real credentials or personal information.
+![MedAlert homepage with the PLUS watch, product highlights, and Guardian login](docs/preview.png)
+
+> **Demo only:** all wearer and device information is fictional. No emergency services are connected. Please do not enter real credentials or personal information.
+
+## Take a Look
+
+Select **Use demo credentials** on the login screen, or enter:
+
+| Email | Password |
+| --- | --- |
+| `demo@medalert.test` | `Guardian72!` |
+
+The flow covers a responsive homepage, validated login with success and failure states, and Margaret Thompson's dashboard. Device information comes from a server-side API, with **status refresh and recent activity** as the additional Guardian features.
+
+## AI Process
+
+**Tools:** OpenAI Codex handled implementation, design iteration, testing, and deployment. Claude Code and Claude Design were not used. Frederick supplied the brief and directed the end-to-end build.
+
+**Context:** the full challenge, [MedAlert's website](https://medalert.io), the [PLUS product page](https://medalert.io/products/medalert-plus-medical-alert-watch-4g-with-gps), and the Guardian details in the job posting. The design focuses on independence for older adults and reassurance for their families, using actual product imagery rather than generic healthcare visuals.
+
+**Main instructions, condensed:**
+> Build the challenge end to end, credit Codex in GitHub, and deploy it.
+
+> Prioritize a responsive product hero, a complete login-to-dashboard flow, API-backed device data, and clear demo boundaries. Test failure states and mobile layouts.
+
+**Corrections and judgment:** browser testing caught a 320px layout overflow, which Codex fixed. GPS age is derived from API timestamps instead of permanent frontend text. Status refresh and recent activity were chosen over a simulated SOS button to avoid suggesting that the prototype can dispatch help.
+
+## Run Locally
 
 ```sh
 npm ci
 npm run dev
-npm run build
 ```
 
-Stack: Next.js App Router, TypeScript, React, plain CSS, Lucide icons. No database or external AI API is needed. Deploy to Vercel with its Next.js preset.
+Open [localhost:3000](http://localhost:3000). No database or external API key is needed. For a production build, run `npm run build` followed by `npm start`.
 
-## Context and prompts
+## Under the Hood
 
-I supplied Codex the full challenge and asked it to research [MedAlert](https://medalert.io), the [PLUS product](https://medalert.io/products/medalert-plus-medical-alert-watch-4g-with-gps), and the Guardian context in the job posting. The audience is older adults and their families; the design emphasizes independence rather than fear. The product image is MedAlert's own, used here solely for this assessment, with ownership retained by MedAlert.
+| Route | Responsibility |
+| --- | --- |
+| `POST /api/login` | Validates demo credentials and sets a one-hour signed HttpOnly, SameSite cookie. |
+| `DELETE /api/login` | Clears the session cookie. |
+| `GET /api/device` | Checks the session and returns Margaret's fictional device information and activity. |
+| `/guardian` | Redirects unauthenticated visitors; the dashboard fetches data and handles loading, errors, and refresh. |
 
-Main instructions:
-1. "Build the challenge end to end, credit Codex in GitHub, and deploy it."
-2. "Prioritize a tasteful, responsive product hero, a complete login-to-dashboard flow, an API-backed device view, and honest demo boundaries. Test failure states and mobile layouts."
+**Boundaries:** authentication is mocked, with public credentials and a public fallback signing secret. There is no rate limiting, user directory, password reset, revocation store, or database. `SESSION_SECRET` can override the demo secret, but does not make this production authentication. Device data is generated per request, not live telemetry; "Online" does not establish the wearer's wellbeing. Never connect real wearer data to this prototype.
 
-During generation I directed attention toward reliable end-to-end behavior, not more features. Codex corrected a 320px layout overflow found by browser tests and derived the GPS age from API timestamps instead of leaving it as permanent frontend text. We chose status refresh and recent activity over a simulated SOS action to avoid implying that the demo contacts emergency services.
+## Verification
 
-## Structure and limits
+The build passed locally and on Vercel. Playwright checks passed on localhost and the **public deployment** for API authorization, invalid and valid login, data loading, refresh, and logout. There were no uncaught browser errors or horizontal overflow at 390px and 320px; desktop and mobile screenshots were also visually inspected.
 
-- `POST /api/login`: server-side input validation, demo credentials, one-hour signed HttpOnly/SameSite cookie. `DELETE /api/login` signs out.
-- `GET /api/device`: checks the cookie and returns Margaret's fictional device information and activity. The dashboard fetches it and handles loading, errors and refresh.
-- `/guardian` redirects unauthenticated visitors; no user/device information is taken from MedAlert's real systems.
-- This is **mock authentication**, not production security: public demo credentials and fallback signing secret, no rate limiting, user directory, reset flow, database or revocation store. `SESSION_SECRET` can override the demo secret. Never use this prototype with real wearer data.
-- Data is generated per request, not device telemetry. "Online" is not a wellbeing assertion; GPS is a last-known location. No emergency calls or alerts are dispatched.
+To rerun: start `npx next dev --port=3097`, then run `node tests/smoke.mjs` in another terminal. The test uses Microsoft Edge through Playwright. Set `TEST_URL` to test another deployment; screenshots go into the ignored `test-results/` directory.
 
-## Verification and time
+## Time and Credits
 
-`npm run build` passed locally and on Vercel. `node tests/smoke.mjs` passed against both localhost and the public deployment: unauthorized API access, malformed/incorrect credentials, login, dashboard fetch, refresh, logout, zero uncaught browser errors, and no horizontal overflow at 390px/320px. Desktop and mobile screenshots were visually inspected. The test uses installed Microsoft Edge via Playwright. Run with `npx next dev --port=3097`, or set `TEST_URL` to another origin. Screenshots are written to ignored `test-results/`.
+**Initial build: approximately 15 minutes.** Work began at 13:24 Manila time on September 30, 2026; the live deployment passed browser checks at 13:36, followed by the README and repository handoff. Company research had already begun in the preceding conversation. This README's presentation was refined afterward; no application features were added in that documentation pass.
 
-Approximately 15 minutes including setup, implementation, testing, publication and documentation. Build started September 30, 2026 at 13:24 Manila time; the public deployment passed browser checks at 13:36, followed by the final README/repository handoff. Company research had already begun in the preceding conversation. This is not a claim that all prior preparation happened within the build timer.
+**Frederick Ian Aranico** supplied the challenge and product direction. **OpenAI Codex** authored the implementation, ran the tools and tests, and prepared the repository and deployment. Codex is also credited in the commit co-author trailers.
 
-## Authorship
-
-Frederick Ian Aranico supplied the challenge and product direction. OpenAI Codex generated the implementation, ran the tools and tests, and prepared the repository and deployment. This is explicitly AI-authored work, not a claim that Frederick manually wrote every component. MedAlert trademarks and imagery remain their respective owner's property; this is not an official MedAlert service.
+MedAlert trademarks and product imagery remain their respective owner's property and are used for this assessment only. This is an independent concept, not an official MedAlert service.
