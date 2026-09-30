@@ -4,6 +4,8 @@ A hiring-challenge concept for MedAlert: a product-led homepage, demo authentica
 
 ## Try it
 
+[Live prototype](https://medalert-guardian-challenge.vercel.app) | [Public source](https://github.com/Ennsss/medalert-guardian-prototype)
+
 Use `demo@medalert.test` / `Guardian72!`, or select **Use demo credentials** on the login page. Any other credentials produce an error. Please do not enter real credentials or personal information.
 
 ```sh
@@ -34,9 +36,9 @@ During generation I directed attention toward reliable end-to-end behavior, not 
 
 ## Verification and time
 
-`npm run build` passed. `node tests/smoke.mjs` tests unauthorized API access, malformed/incorrect credentials, login, dashboard fetch, refresh, logout, browser errors, and horizontal overflow at 390px/320px. It uses installed Microsoft Edge via Playwright. Run with the dev server on port 3097, or set `TEST_URL` to another origin. Screenshots are written to ignored `test-results/`.
+`npm run build` passed locally and on Vercel. `node tests/smoke.mjs` passed against both localhost and the public deployment: unauthorized API access, malformed/incorrect credentials, login, dashboard fetch, refresh, logout, zero uncaught browser errors, and no horizontal overflow at 390px/320px. Desktop and mobile screenshots were visually inspected. The test uses installed Microsoft Edge via Playwright. Run with `npx next dev --port=3097`, or set `TEST_URL` to another origin. Screenshots are written to ignored `test-results/`.
 
-Build started September 30, 2026 at 13:24 Manila time. Approximately 15 minutes were allocated to implementation, testing, and publishing; final elapsed time and deployment result will be recorded before handoff. Company research had already begun in the preceding conversation. This is not a claim that all prior preparation happened within the build timer.
+Approximately 15 minutes including setup, implementation, testing, publication and documentation. Build started September 30, 2026 at 13:24 Manila time; the public deployment passed browser checks at 13:36, followed by the final README/repository handoff. Company research had already begun in the preceding conversation. This is not a claim that all prior preparation happened within the build timer.
 
 ## Authorship
 
